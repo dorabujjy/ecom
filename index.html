@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern E-Commerce</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">ShopModern</div>
+        <div class="nav-links">
+            <a href="index.html" class="active">Home</a>
+            <a href="store.html">Store</a>
+            <a href="login.html" id="loginBtn">Login</a>
+            <a href="#" id="logoutBtn" class="hidden">Logout</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Welcome to ShopModern</h1>
+            <p>Discover the latest trends in fashion and lifestyle</p>
+            <a href="store.html" class="cta-button">Shop Now</a>
+        </div>
+    </header>
+
+    <section class="features">
+        <div class="feature-card">
+            <i class="fas fa-truck"></i>
+            <h3>Free Shipping</h3>
+            <p>On orders over $50</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-undo"></i>
+            <h3>Easy Returns</h3>
+            <p>30-day return policy</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-lock"></i>
+            <h3>Secure Payment</h3>
+            <p>100% secure checkout</p>
+        </div>
+    </section>
+
+    <section class="featured-products">
+        <h2>Featured Products</h2>
+        <div class="product-grid" id="featuredProducts">
+            <!-- Products will be loaded dynamically -->
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About Us</h4>
+                <p>Your trusted destination for modern fashion and lifestyle products.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: info@shopmodern.com</p>
+                <p>Phone: (555) 123-4567</p>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 ShopModern. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="store.js"></script>
+</body>
+</html> 

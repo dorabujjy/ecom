@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store - Modern E-Commerce</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">ShopModern</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="store.html" class="active">Store</a>
+            <a href="cart.html"><i class="fas fa-shopping-cart"></i> Cart</a>
+            <a href="login.html" id="loginBtn">Login</a>
+            <a href="#" id="logoutBtn" class="hidden">Logout</a>
+        </div>
+    </nav>
+
+    <div class="store-container">
+        <aside class="filters">
+            <h3>Filters</h3>
+            <div class="filter-section">
+                <h4>Categories</h4>
+                <div class="filter-options">
+                    <label><input type="checkbox" value="electronics"> Electronics</label>
+                    <label><input type="checkbox" value="clothing"> Clothing</label>
+                    <label><input type="checkbox" value="accessories"> Accessories</label>
+                    <label><input type="checkbox" value="home"> Home & Living</label>
+                </div>
+            </div>
+            <div class="filter-section">
+                <h4>Price Range</h4>
+                <div class="price-range">
+                    <input type="range" id="priceRange" min="0" max="1000" step="10">
+                    <div class="price-inputs">
+                        <input type="number" id="minPrice" placeholder="Min">
+                        <span>-</span>
+                        <input type="number" id="maxPrice" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            <div class="filter-section">
+                <h4>Sort By</h4>
+                <select id="sortBy">
+                    <option value="popular">Popularity</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="newest">Newest First</option>
+                </select>
+            </div>
+        </aside>
+
+        <main class="products-section">
+            <div class="products-header">
+                <h2>All Products</h2>
+                <div class="view-options">
+                    <button class="view-btn active" data-view="grid">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-btn" data-view="list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="product-grid" id="productGrid">
+                <!-- Products will be loaded dynamically -->
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About Us</h4>
+                <p>Your trusted destination for modern fashion and lifestyle products.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: info@shopmodern.com</p>
+                <p>Phone: (555) 123-4567</p>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 ShopModern. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="store.js"></script>
+</body>
+</html> 
