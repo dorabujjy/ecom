@@ -1,4 +1,4 @@
-// Sample product data
+// Sample product data with more details
 const products = [
     {
         id: 1,
@@ -6,7 +6,11 @@ const products = [
         price: 99.99,
         category: "electronics",
         image: "https://source.unsplash.com/random/400x400/?headphones",
-        description: "High-quality wireless headphones with noise cancellation."
+        description: "High-quality wireless headphones with noise cancellation.",
+        rating: 4.5,
+        reviews: 128,
+        stock: 50,
+        tags: ["wireless", "audio", "bluetooth"]
     },
     {
         id: 2,
@@ -14,7 +18,11 @@ const products = [
         price: 199.99,
         category: "electronics",
         image: "https://source.unsplash.com/random/400x400/?smartwatch",
-        description: "Feature-rich smartwatch with health tracking."
+        description: "Feature-rich smartwatch with health tracking.",
+        rating: 4.8,
+        reviews: 256,
+        stock: 30,
+        tags: ["wearable", "fitness", "smart"]
     },
     {
         id: 3,
@@ -22,7 +30,11 @@ const products = [
         price: 79.99,
         category: "accessories",
         image: "https://source.unsplash.com/random/400x400/?backpack",
-        description: "Stylish and functional backpack for everyday use."
+        description: "Stylish and functional backpack for everyday use.",
+        rating: 4.3,
+        reviews: 89,
+        stock: 45,
+        tags: ["fashion", "travel", "storage"]
     },
     {
         id: 4,
@@ -30,7 +42,11 @@ const products = [
         price: 129.99,
         category: "clothing",
         image: "https://source.unsplash.com/random/400x400/?shoes",
-        description: "Comfortable running shoes with advanced cushioning."
+        description: "Comfortable running shoes with advanced cushioning.",
+        rating: 4.6,
+        reviews: 312,
+        stock: 60,
+        tags: ["sports", "fitness", "running"]
     },
     {
         id: 5,
@@ -38,7 +54,11 @@ const products = [
         price: 149.99,
         category: "home",
         image: "https://source.unsplash.com/random/400x400/?coffeemaker",
-        description: "Automatic coffee maker with timer and temperature control."
+        description: "Automatic coffee maker with timer and temperature control.",
+        rating: 4.4,
+        reviews: 167,
+        stock: 25,
+        tags: ["kitchen", "appliance", "coffee"]
     },
     {
         id: 6,
@@ -46,7 +66,11 @@ const products = [
         price: 49.99,
         category: "home",
         image: "https://source.unsplash.com/random/400x400/?yogamat",
-        description: "Non-slip yoga mat with carrying strap."
+        description: "Non-slip yoga mat with carrying strap.",
+        rating: 4.7,
+        reviews: 203,
+        stock: 75,
+        tags: ["fitness", "yoga", "exercise"]
     }
 ];
 
@@ -59,6 +83,8 @@ const minPrice = document.getElementById('minPrice');
 const maxPrice = document.getElementById('maxPrice');
 const sortBy = document.getElementById('sortBy');
 const viewButtons = document.querySelectorAll('.view-btn');
+const searchInput = document.getElementById('searchInput');
+const tagFilters = document.querySelectorAll('.tag-filters input');
 
 // Initialize products and cart in localStorage if not exists
 if (!localStorage.getItem('products')) {
@@ -69,15 +95,24 @@ if (!localStorage.getItem('cart')) {
     localStorage.setItem('cart', JSON.stringify([]));
 }
 
-// Cart functionality
+// Cart functionality with improved feedback
 function addToCart(productId) {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     const product = products.find(p => p.id === productId);
     
     if (product) {
+        if (product.stock <= 0) {
+            showNotification('Sorry, this item is out of stock!', 'error');
+            return;
+        }
+
         const existingItem = cart.find(item => item.id === productId);
         
         if (existingItem) {
+            if (existingItem.quantity >= product.stock) {
+                showNotification('Maximum stock limit reached!', 'error');
+                return;
+            }
             existingItem.quantity += 1;
         } else {
             cart.push({
@@ -90,13 +125,14 @@ function addToCart(productId) {
         }
         
         localStorage.setItem('cart', JSON.stringify(cart));
-        showNotification('Product added to cart!');
+        showNotification('Product added to cart!', 'success');
+        updateCartCount();
     }
 }
 
-function showNotification(message) {
+function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
-    notification.className = 'notification';
+    notification.className = `notification ${type}`;
     notification.textContent = message;
     document.body.appendChild(notification);
     
@@ -105,7 +141,7 @@ function showNotification(message) {
     }, 3000);
 }
 
-// Load and display products
+// Enhanced product display with ratings and stock
 function displayProducts(productsToShow = products, container = productGrid) {
     if (!container) return;
     
@@ -114,13 +150,23 @@ function displayProducts(productsToShow = products, container = productGrid) {
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
         productCard.innerHTML = `
-            <img src="${product.image}" alt="${product.name}" class="product-image">
+            <div class="product-image-container">
+                <img src="${product.image}" alt="${product.name}" class="product-image">
+                ${product.stock <= 5 ? `<div class="stock-badge">Only ${product.stock} left!</div>` : ''}
+            </div>
             <div class="product-info">
                 <h3 class="product-title">${product.name}</h3>
+                <div class="product-rating">
+                    ${generateStarRating(product.rating)}
+                    <span class="review-count">(${product.reviews})</span>
+                </div>
                 <p class="product-price">$${product.price.toFixed(2)}</p>
-                <p>${product.description}</p>
-                <button class="add-to-cart-btn" onclick="addToCart(${product.id})">
-                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                <p class="product-description">${product.description}</p>
+                <div class="product-tags">
+                    ${product.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+                <button class="add-to-cart-btn" onclick="addToCart(${product.id})" ${product.stock <= 0 ? 'disabled' : ''}>
+                    <i class="fas fa-shopping-cart"></i> ${product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
                 </button>
             </div>
         `;
@@ -128,22 +174,52 @@ function displayProducts(productsToShow = products, container = productGrid) {
     });
 }
 
-// Filter products
+function generateStarRating(rating) {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    let stars = '';
+    
+    for (let i = 0; i < fullStars; i++) {
+        stars += '<i class="fas fa-star"></i>';
+    }
+    if (hasHalfStar) {
+        stars += '<i class="fas fa-star-half-alt"></i>';
+    }
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+        stars += '<i class="far fa-star"></i>';
+    }
+    
+    return stars;
+}
+
+// Enhanced filtering with search and tags
 function filterProducts() {
     const selectedCategories = Array.from(categoryFilters)
         .filter(filter => filter.checked)
         .map(filter => filter.value);
     
+    const selectedTags = Array.from(tagFilters)
+        .filter(filter => filter.checked)
+        .map(filter => filter.value);
+    
+    const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
     const minPriceValue = parseFloat(minPrice.value) || 0;
     const maxPriceValue = parseFloat(maxPrice.value) || Infinity;
     
     let filteredProducts = products.filter(product => {
         const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(product.category);
+        const tagMatch = selectedTags.length === 0 || selectedTags.some(tag => product.tags.includes(tag));
+        const searchMatch = !searchTerm || 
+            product.name.toLowerCase().includes(searchTerm) || 
+            product.description.toLowerCase().includes(searchTerm) ||
+            product.tags.some(tag => tag.toLowerCase().includes(searchTerm));
         const priceMatch = product.price >= minPriceValue && product.price <= maxPriceValue;
-        return categoryMatch && priceMatch;
+        
+        return categoryMatch && tagMatch && searchMatch && priceMatch;
     });
     
-    // Sort products
+    // Enhanced sorting
     const sortValue = sortBy.value;
     switch(sortValue) {
         case 'price-low':
@@ -152,20 +228,49 @@ function filterProducts() {
         case 'price-high':
             filteredProducts.sort((a, b) => b.price - a.price);
             break;
+        case 'rating':
+            filteredProducts.sort((a, b) => b.rating - a.rating);
+            break;
+        case 'reviews':
+            filteredProducts.sort((a, b) => b.reviews - a.reviews);
+            break;
         case 'newest':
             filteredProducts.sort((a, b) => b.id - a.id);
             break;
         default:
-            // Popularity (default) - using ID as a proxy for popularity
             filteredProducts.sort((a, b) => a.id - b.id);
     }
     
     displayProducts(filteredProducts);
+    updateFilterCount(filteredProducts.length);
 }
 
-// Event Listeners
+function updateFilterCount(count) {
+    const filterCount = document.getElementById('filterCount');
+    if (filterCount) {
+        filterCount.textContent = `${count} products found`;
+    }
+}
+
+// Event Listeners with debouncing for search
+let searchTimeout;
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            filterProducts();
+        }, 300);
+    });
+}
+
 if (categoryFilters.length > 0) {
     categoryFilters.forEach(filter => {
+        filter.addEventListener('change', filterProducts);
+    });
+}
+
+if (tagFilters.length > 0) {
+    tagFilters.forEach(filter => {
         filter.addEventListener('change', filterProducts);
     });
 }
@@ -186,7 +291,7 @@ if (sortBy) {
     sortBy.addEventListener('change', filterProducts);
 }
 
-// View toggle functionality
+// Enhanced view toggle with smooth transitions
 if (viewButtons.length > 0) {
     viewButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -194,20 +299,38 @@ if (viewButtons.length > 0) {
             button.classList.add('active');
             
             const view = button.dataset.view;
+            const productGrid = document.getElementById('productGrid');
+            
             if (view === 'list') {
                 productGrid.style.gridTemplateColumns = '1fr';
+                productGrid.classList.add('list-view');
             } else {
                 productGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
+                productGrid.classList.remove('list-view');
             }
         });
     });
 }
 
-// Display featured products on home page
+// Cart count update
+function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const cartCount = document.querySelector('.cart-count');
+    if (cartCount) {
+        cartCount.textContent = totalItems;
+        cartCount.style.display = totalItems > 0 ? 'block' : 'none';
+    }
+}
+
+// Display featured products on home page with enhanced styling
 if (featuredProducts) {
-    const featuredItems = products.slice(0, 4); // Show first 4 products
+    const featuredItems = products
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 4);
     displayProducts(featuredItems, featuredProducts);
 }
 
-// Initial display
-displayProducts(); 
+// Initial display and setup
+displayProducts();
+updateCartCount(); 

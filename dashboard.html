@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Ecom</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard-container {
+            padding: 2rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+            width: 100%;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            margin: 0;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 0.5rem 0;
+        }
+
+        .card-change {
+            font-size: 0.9rem;
+            color: #28a745;
+        }
+
+        .card-change.negative {
+            color: #dc3545;
+        }
+
+        .recent-activity {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .activity-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .activity-time {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .chart-row {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+
+        .chart-title {
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-width: 0;
+            width: 100%;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: 300px;
+        }
+
+        .chart-wrapper.small {
+            min-height: 250px;
+            height: 250px;
+        }
+
+        .chart-placeholder {
+            width: 100%;
+            height: 300px;
+            background: var(--light-gray);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            background: var(--light-gray);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        @media (max-width: 992px) {
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Ecom</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="store.html">Store</a>
+            <a href="cart.html">Cart</a>
+            <div class="dropdown">
+                <button class="dropbtn"><i class="fas fa-user"></i></button>
+                <div class="dropdown-content">
+                    <a href="dashboard.html" class="active">Dashboard</a>
+                    <a href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <h1>Dashboard</h1>
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon" style="background: var(--gradient-primary)">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3 class="card-title">Total Orders</h3>
+                </div>
+                <div class="card-value" id="totalOrders">0</div>
+                <div class="card-change" id="orderChange">Loading...</div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon" style="background: var(--gradient-secondary)">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <h3 class="card-title">Revenue</h3>
+                </div>
+                <div class="card-value" id="totalRevenue">$0</div>
+                <div class="card-change" id="revenueChange">Loading...</div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon" style="background: var(--gradient-accent)">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="card-title">Customers</h3>
+                </div>
+                <div class="card-value" id="totalCustomers">0</div>
+                <div class="card-change" id="customerChange">Loading...</div>
+            </div>
+
+            <div class="chart-row">
+                <div class="chart-container">
+                    <h3 class="chart-title">Sales Overview</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                    <div class="stats-container">
+                        <div class="stat-item">
+                            <div class="stat-value" id="avgOrderValue">$0</div>
+                            <div class="stat-label">Avg. Order Value</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="conversionRate">0%</div>
+                            <div class="stat-label">Conversion Rate</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="returnRate">0%</div>
+                            <div class="stat-label">Return Rate</div>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="chart-container">
+                    <h3 class="chart-title">Category Distribution</h3>
+                    <div class="chart-wrapper small">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                    <div class="stats-container">
+                        <div class="stat-item">
+                            <div class="stat-value" id="topCategory">-</div>
+                            <div class="stat-label">Top Category</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="categoryCount">0</div>
+                            <div class="stat-label">Categories</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container full-width">
+                <h3 class="chart-title">Customer Growth</h3>
+                <div class="chart-wrapper">
+                    <canvas id="customerChart"></canvas>
+                </div>
+            </div>
+
+            <div class="recent-activity">
+                <h3>Recent Activity</h3>
+                <ul class="activity-list" id="activityList">
+                    <!-- Activities will be populated dynamically -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard data and charts initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards
+            const cards = document.querySelectorAll('.dashboard-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                }, index * 200);
+            });
+
+            // Initialize dashboard data
+            initializeDashboardData();
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Load recent activities
+            loadRecentActivities();
+        });
+
+        function initializeDashboardData() {
+            // Get data from localStorage
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            // Calculate metrics
+            const totalOrders = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalRevenue = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const totalCustomers = new Set(cart.map(item => item.id)).size;
+            
+            // Update UI
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+            document.getElementById('totalCustomers').textContent = totalCustomers;
+            
+            // Calculate additional metrics
+            const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+            const conversionRate = Math.min(100, (totalOrders / (products.length * 10)) * 100);
+            const returnRate = Math.min(100, (totalOrders * 0.05));
+            
+            document.getElementById('avgOrderValue').textContent = `$${avgOrderValue.toFixed(2)}`;
+            document.getElementById('conversionRate').textContent = `${conversionRate.toFixed(1)}%`;
+            document.getElementById('returnRate').textContent = `${returnRate.toFixed(1)}%`;
+            
+            // Simulate changes (in a real app, this would come from backend)
+            document.getElementById('orderChange').textContent = '+12.5% from last month';
+            document.getElementById('revenueChange').textContent = '+8.3% from last month';
+            document.getElementById('customerChange').textContent = '+5.2% from last month';
+        }
+
+        function initializeCharts() {
+            // Sales Chart
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Sales',
+                        data: [12000, 19000, 15000, 25000, 22000, 30000],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: true,
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Category Distribution Chart
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Electronics', 'Clothing', 'Home', 'Accessories'],
+                    datasets: [{
+                        data: [30, 25, 25, 20],
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 205, 86)',
+                            'rgb(75, 192, 192)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            // Customer Growth Chart
+            const customerCtx = document.getElementById('customerChart').getContext('2d');
+            new Chart(customerCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'New Customers',
+                        data: [65, 59, 80, 81, 56, 55],
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgb(54, 162, 235)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Returning Customers',
+                        data: [28, 48, 40, 19, 86, 27],
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Update category stats
+            document.getElementById('topCategory').textContent = 'Electronics';
+            document.getElementById('categoryCount').textContent = '4';
+        }
+
+        function loadRecentActivities() {
+            const activityList = document.getElementById('activityList');
+            const activities = [
+                {
+                    icon: 'shopping-bag',
+                    title: 'New Order #1234',
+                    time: '2 minutes ago',
+                    color: 'var(--gradient-primary)'
+                },
+                {
+                    icon: 'user-plus',
+                    title: 'New Customer Registration',
+                    time: '15 minutes ago',
+                    color: 'var(--gradient-secondary)'
+                },
+                {
+                    icon: 'star',
+                    title: 'New Product Review',
+                    time: '1 hour ago',
+                    color: 'var(--gradient-accent)'
+                }
+            ];
+
+            activityList.innerHTML = activities.map(activity => `
+                <li class="activity-item">
+                    <div class="activity-icon" style="background: ${activity.color}">
+                        <i class="fas fa-${activity.icon}"></i>
+                    </div>
+                    <div class="activity-details">
+                        <h4 class="activity-title">${activity.title}</h4>
+                        <p class="activity-time">${activity.time}</p>
+                    </div>
+                </li>
+            `).join('');
+        }
+    </script>
+</body>
+</html> 
